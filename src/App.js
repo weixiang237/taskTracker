@@ -1,14 +1,23 @@
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import { Router, Switch, Route, Redirect } from 'react-router-dom'
+import Header from './components/Header'
 import './App.css';
+import LoginScreen from './components/loginScreen';
+import Table from './components/Table'
 
-function App() {
-  return (
-    <div className="App">
-      <a>Finished setting up the project
-        redux, redux-saga, router
-      </a>
-    </div>
-  );
+class App extends Component {
+  render(){
+    return (
+      <Router history={this.props.history}>
+        <div className="App">
+        <Switch>
+          <Route path='/login' component={LoginScreen}/>
+          <Table/>
+        </Switch>
+        </div>
+        </Router>
+    )
+  }
 }
 
 export default App;
