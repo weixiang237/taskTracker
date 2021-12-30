@@ -1,13 +1,66 @@
 import { useTable } from 'react-table'
 import React, { useEffect, useState } from 'react';
 import EditTask from './editTaskScreen/EditTask';
+import '../css/table.css'
+import '../css/editTask.css'
 
 export default function Table(){
-
+console.log('Table re-rendered')
 const [editStates, setEditStates] = useState({
-  editTaskOn: true,
+  editTaskOn: false,
   taskId: null,
   taskTitle: null,
+  taskDescription: null,
+  day: null,
+  assignedTo: null,
+  status: null,
+  expectedTime: null,
+  actualTime: null,
+  note: null,
+})
+
+const [startDate, setStartDate] = useState(new Date());
+const [dueDate, setDueDate] = useState(new Date()); 
+
+const handleAddTask= () =>{
+  //let newEditStates = Object.assign({}, editStates)
+  //console.log(newEditStates)
+}
+
+const handleSaveTask= () =>{
+  let newTasks = JSON.parse(JSON.stringify(tasks))
+  let taskIndex = newTasks.findIndex((obj=>obj.taskId === editStates.taskId))
+  let keys = Object.keys(newTasks[taskIndex])
+  keys.map(key=>{
+    newTasks[taskIndex][key] = editStates[key]
+  })
+  newTasks[taskIndex].startDate = new Date(startDate)
+  newTasks[taskIndex].dueDate = new Date(dueDate)
+  setTasks(newTasks)
+}
+
+const handleEditTaskChange = (e) =>{
+  let newEditStates = Object.assign({}, editStates)
+  newEditStates[e.target.name] = e.target.value
+  setEditStates(newEditStates)
+}
+
+const handleDateChange = (dateKey, date) =>{
+  let newDate = new Date(date)
+  if (dateKey === 'startDate'){
+    setStartDate(newDate)
+  }
+  if (dateKey === 'dueDate'){
+    setDueDate(newDate)
+  }
+}
+
+function closeEditTaskForm (){
+  let newEditStates = {
+  editTaskOn: false,
+  taskId: null,
+  taskTitle: null,
+  taskDescription: null,
   day: null,
   assignedTo: null,
   status: null,
@@ -16,18 +69,38 @@ const [editStates, setEditStates] = useState({
   expectedTime: null,
   actualTime: null,
   note: null,
-})
+ }
+ console.log('success')
+ setEditStates(newEditStates)
+}
+
+
+const handleEditTask= (rowValues) =>{
+  //console.log(rowValues)
+  let newEditStates = Object.assign({}, editStates)
+  
+  let keys = Object.keys(newEditStates)
+  keys.map(key=>{
+    newEditStates[key] = rowValues[key]
+  })
+  newEditStates.editTaskOn = true
+  let newStartDate = new Date(rowValues.startDate)
+  let newDueDate = new Date(rowValues.dueDate)
+  setEditStates(newEditStates)
+  setStartDate(newStartDate)
+  setDueDate(newDueDate)
+}
 
 const [tasks, setTasks] = useState([
     {
         taskId: 'randomUniqueId',
         taskTitle:'Leetcode',
-        description:'praticing algorithm',
+        taskDescription:'praticing algorithm',
         day: 'Monday',
         assignedTo: 'Way',
-        status: 'Done',
-        startDate: '2021, 09, 21',
-        dueDate: '2021, 12, 21',
+        status: 'done',
+        startDate: '2021,09,21',
+        dueDate: '2021,12,21',
         // expected time (hours)
         expectedTime: 6,
         // acutal time had worked on
@@ -37,11 +110,11 @@ const [tasks, setTasks] = useState([
     {
       taskId: 'randomUniqueId2',
       taskTitle:'taskTracker',
-      description:'doing side project',
-      day: 'Monday',
+      taskDescription:'doing side project',
+      day: 'Tuesday',
       assignedTo: 'Way',
-      status: 'Done',
-      startDate: '2021, 09, 23',
+      status: 'inprogress',
+      startDate: '2021,09,23',
       dueDate: '2021, 12, 25',
       // expected time (hours)
       expectedTime: 6,
@@ -52,12 +125,12 @@ const [tasks, setTasks] = useState([
     {
       taskId: 'randomUniqueId3',
       taskTitle:'Break',
-      description:'take a break',
-      day: 'Monday',
+      taskDescription:'take a break',
+      day: 'Wednesday',
       assignedTo: 'Way',
-      status: 'Done',
-      startDate: '2021, 12, 25',
-      dueDate: '2022, 01, 01',
+      status: 'notstarted',
+      startDate: '2021,12,25',
+      dueDate: '2022-01-01',
       // expected time (hours)
       expectedTime: 6,
       // acutal time had worked on
@@ -86,7 +159,7 @@ const data = React.useMemo(
       },
       {
         Header: 'Description',
-        accessor: 'description',
+        accessor: 'taskDescription',
       },
       {
         Header: 'Day',
@@ -125,7 +198,8 @@ const data = React.useMemo(
           accessor: 'action',
           Cell: ({row}) => 
           row.values.taskId !== null ?
-          <button className= "btn-delete" onClick ={()=>{
+          <button className= "btn-delete" onClick ={editStates.editTaskOn? null : (e)=>{
+            e.stopPropagation()
             const newData = tasks.filter(
                 task => task.taskId !== row.values.taskId
             )
@@ -133,7 +207,7 @@ const data = React.useMemo(
         }}>Delete</button> : null
       }
     ],
-    [tasks]
+    [tasks, editStates.editTaskOn]
   )
 
  /*  const tableHooks = (hooks) =>{
@@ -163,7 +237,8 @@ const data = React.useMemo(
   } = useTable({ columns, data })
 
     return(
-      <div>
+      <div className='tableScreen'>
+        <div>
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
         <thead>
           {headerGroups.map(headerGroup => (
@@ -189,7 +264,7 @@ const data = React.useMemo(
             prepareRow(row)
             return (
               <tr {...row.getRowProps()}
-                onClick = {()=>{console.log('you clicked row' + row.id)}}
+                onClick = {editStates.editTaskOn? null : ()=>{handleEditTask(row.values)}}
               >
                 {row.cells.map(cell => {
                   return (
@@ -211,12 +286,22 @@ const data = React.useMemo(
         </tbody>
         <tfoot>
               <tr>
-                  <td colSpan="12"><button style={{display: 'inline-block'}}>+</button></td>
+                  <td colSpan="12"><button onClick = {handleAddTask} style={{display: 'inline-block'}}>+</button></td>
               </tr>
         </tfoot>
       </table>
       <div>
-        <EditTask editTaskProps = {editStates}/>
+        {editStates.editTaskOn && 
+        <EditTask 
+        editTaskProps = {editStates}
+        startDate = {startDate}
+        dueDate = {dueDate}
+        closeEditTaskForm={closeEditTaskForm}
+        handleEditTaskChange={handleEditTaskChange}
+        handleSaveTask={handleSaveTask}
+        handleDateChange={handleDateChange}
+        />}
+      </div>
       </div>
      </div> 
     )

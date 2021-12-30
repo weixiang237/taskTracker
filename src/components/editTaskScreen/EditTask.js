@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"
 
@@ -8,89 +8,90 @@ export default function EditTask(props){
     const {editTaskOn,
         taskId,
         taskTitle,
+        taskDescription,
         day,
         assignedTo,
         status,
-        startDate,
-        dueDate,
         expectedTime,
         actualTime,
         note,} = props.editTaskProps;
-    const [StartDate, setStartDate] = useState(new Date(startDate));
-    const [DueDate, setDueDate] = useState(new Date(dueDate));
-    //console.log(startDate)
+    const startDate = props.startDate;
+    const dueDate = props.dueDate;
+    //console.log(props)
+    console.log('EditTask re-rendered')
+
     return(
-        props.editTaskProps.editTaskOn ?
         <div className='EditTaskScreen'>
             <form className='EditTaskForm'>
-                {placeHolder !== null ?
+                {taskId !== null ?
                 <label>
-                    Task ID: {placeHolder}
+                    Task ID: {taskId}
                 </label>:null
                 }
                 <br/>
                 <label>Task Title:
-                    <input type='text' name='taskTitle'/> 
+                    <input type='text' name='taskTitle'value={taskTitle} onChange={(e)=>props.handleEditTaskChange(e)}/> 
                 </label>
                 <br/>
                 <label>Description:
-                    <input type='text' name='taskDescription'/> 
+                    <input type='text' name='taskDescription'value={taskDescription} onChange={(e)=>props.handleEditTaskChange(e)}/> 
                 </label>
                 <br/>
                 <label>
                     Day: 
-                    <select name='days'>
-                        <option value="monday">Monday</option>
-                        <option value="tuesday">Tuesday</option>
-                        <option value="wednesday">Wednesday</option>
-                        <option value="thursday">Thursday</option>
-                        <option value="friday">Friday</option>
-                        <option value="saturday">Saturday</option>
-                        <option value="sunday">Sunday</option>
+                    <select name='day' value={day} onChange={(e)=>props.handleEditTaskChange(e)}>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
                     </select>                      
                 </label>
                 <br/>
                 <label>
                     Assinged to: 
-                    <input type='text' name='assignedTo'/>
+                    <input type='text' name='assignedTo' value={assignedTo} onChange={(e)=>props.handleEditTaskChange(e)}/>
                 </label>
                 <br/>
                 <label>
                     Status: 
-                    <select name='status'>
+                    <select name='status'value={status} onChange={(e)=>props.handleEditTaskChange(e)}>
                         <option value="done">Done</option>
-                        <option value="inprogess">In Progress</option>
+                        <option value="inprogress">In Progress</option>
                         <option value="notstarted">Not Started</option>
                     </select>   
                 </label>
                 <br/>
                 <label>
                     Start Date:
-                    <DatePicker selected={StartDate} onChange={(date)=>setStartDate(date)}/>
+                    <DatePicker  selected={startDate} name = 'startDate' onChange={(date)=>{props.handleDateChange('startDate', date)}}/>
                 </label>
                 <br/>
                 <label>
                     Due Date:
-                    <DatePicker selected={DueDate} onChange={(date)=>setDueDate(date)}/>
+                    <DatePicker  selected={dueDate} name = 'dueDate' onChange={(date)=>{props.handleDateChange('dueDate', date)}}/>
                 </label>
                 <br/>
                 <label>
                     Expected Time: 
-                    <input type='number' name='expectedTime'/>
+                    <input type='number' value={expectedTime} name='expectedTime' onChange={(e)=>props.handleEditTaskChange(e)}/>
                 </label>
                 <br/>
                 <label>
                     Actual Time: 
-                    <input type='number' name='actualTime'/>
+                    <input type='number' value={actualTime} name='actualTime' onChange={(e)=>props.handleEditTaskChange(e)}/>
                 </label>
                 <br/>
                 <label>
                     Note: 
-                    <input type='text' name='note'/>
+                    <input type='text' value={note} name='note' onChange={(e)=>props.handleEditTaskChange(e)}/>
                 </label>
                 <br/>
-                <input type = 'submit' name='submit'/>
             </form>
-        </div> : <div></div>
+            <button onClick={props.handleSaveTask}>Save</button>
+            <button onClick={props.closeEditTaskForm}>close</button>
+        </div>
     )
 }

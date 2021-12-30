@@ -44,10 +44,10 @@ sagaMiddleware.run(rootSaga)
 const persistor = persistStore(store)
 
 render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <App history={history}/>
-    </PersistGate>
-  </Provider>,
+  //<Provider store={store}>
+    //<PersistGate loading={null} persistor={persistor}>
+      <App history={history}/>,
+    //</PersistGate>
+  //</Provider>,
   document.getElementById('root')
 )

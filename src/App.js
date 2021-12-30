@@ -11,12 +11,13 @@ class App extends Component {
     return (
       <Router history={this.props.history}>
         <div className="App">
-        <Switch>
-          <Route path='/login' component={LoginScreen}/>
-          <Table/>
-        </Switch>
+          <Header/>
+          <Switch>
+            <Route path='/login' component={LoginScreen}/>
+            <Table/>
+          </Switch>
         </div>
-        </Router>
+      </Router>
     )
   }
 }

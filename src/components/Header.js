@@ -32,7 +32,7 @@ export default function Header() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
+            Tasks Tracker
           </Typography>
           {auth && (
             <div style = {{marginLeft: "auto",
