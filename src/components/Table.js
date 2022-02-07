@@ -11,7 +11,6 @@ const [editStates, setEditStates] = useState({
   taskId: null,
   taskTitle: null,
   taskDescription: null,
-  day: null,
   assignedTo: null,
   status: null,
   expectedTime: null,
@@ -22,13 +21,27 @@ const [editStates, setEditStates] = useState({
 const [startDate, setStartDate] = useState(new Date());
 const [dueDate, setDueDate] = useState(new Date()); 
 
+
+function cloneTasks (tasks){
+  // deep copy the old tasks
+  let newTasks = JSON.parse(JSON.stringify(tasks));
+
+  // unable to copy date objects need to handle them through map function
+  newTasks.map(task=>{
+    task.dueDate = new Date(tasks[newTasks.indexOf(task)].dueDate.getTime())
+    task.startDate = new Date(tasks[newTasks.indexOf(task)].startDate.getTime())
+  })
+  return newTasks
+}
+
+
 const handleAddTask= () =>{
   //let newEditStates = Object.assign({}, editStates)
   //console.log(newEditStates)
 }
 
 const handleSaveTask= () =>{
-  let newTasks = JSON.parse(JSON.stringify(tasks))
+  let newTasks = cloneTasks(tasks)
   let taskIndex = newTasks.findIndex((obj=>obj.taskId === editStates.taskId))
   let keys = Object.keys(newTasks[taskIndex])
   keys.map(key=>{
@@ -36,7 +49,12 @@ const handleSaveTask= () =>{
   })
   newTasks[taskIndex].startDate = new Date(startDate)
   newTasks[taskIndex].dueDate = new Date(dueDate)
+  console.log('updated object')
+  console.log(newTasks)
+  let newEditStates = JSON.parse(JSON.stringify(editStates))
+  newEditStates.editTaskOn = false
   setTasks(newTasks)
+  setEditStates(newEditStates)
 }
 
 const handleEditTaskChange = (e) =>{
@@ -61,7 +79,6 @@ function closeEditTaskForm (){
   taskId: null,
   taskTitle: null,
   taskDescription: null,
-  day: null,
   assignedTo: null,
   status: null,
   startDate: new Date(),
@@ -96,11 +113,10 @@ const [tasks, setTasks] = useState([
         taskId: 'randomUniqueId',
         taskTitle:'Leetcode',
         taskDescription:'praticing algorithm',
-        day: 'Monday',
         assignedTo: 'Way',
         status: 'done',
-        startDate: '2021,09,21',
-        dueDate: '2021,12,21',
+        startDate: new Date('2021,09,21'),
+        dueDate: new Date('2021,12,21'),
         // expected time (hours)
         expectedTime: 6,
         // acutal time had worked on
@@ -111,11 +127,10 @@ const [tasks, setTasks] = useState([
       taskId: 'randomUniqueId2',
       taskTitle:'taskTracker',
       taskDescription:'doing side project',
-      day: 'Tuesday',
       assignedTo: 'Way',
       status: 'inprogress',
-      startDate: '2021,09,23',
-      dueDate: '2021, 12, 25',
+      startDate: new Date('2021,09,23'),
+      dueDate: new Date('2021, 12, 25'),
       // expected time (hours)
       expectedTime: 6,
       // acutal time had worked on
@@ -126,11 +141,10 @@ const [tasks, setTasks] = useState([
       taskId: 'randomUniqueId3',
       taskTitle:'Break',
       taskDescription:'take a break',
-      day: 'Wednesday',
       assignedTo: 'Way',
       status: 'notstarted',
-      startDate: '2021,12,25',
-      dueDate: '2022-01-01',
+      startDate: new Date('2021,12,25'),
+      dueDate: new Date('2022-01-01'),
       // expected time (hours)
       expectedTime: 6,
       // acutal time had worked on
@@ -162,10 +176,6 @@ const data = React.useMemo(
         accessor: 'taskDescription',
       },
       {
-        Header: 'Day',
-        accessor: 'day',
-      },
-      {
         Header: 'Assigned To',
         accessor: 'assignedTo',
       },
@@ -176,10 +186,19 @@ const data = React.useMemo(
       {
         Header: 'Start Date',
         accessor: 'startDate',
+        Cell: ({row}) =>{
+          // return a stringified date object
+          return tasks[row.id].startDate.toDateString()
+        }
       },
       {
         Header: 'Due Date',
         accessor: 'dueDate',
+        Cell: ({row}) =>{
+          // return a stringified date object
+          console.log(tasks[row.id].dueDate)
+          return tasks[row.id].dueDate.toDateString()
+        }
       },
       {
         Header: 'Expected Time',

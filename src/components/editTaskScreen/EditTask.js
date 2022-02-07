@@ -9,7 +9,6 @@ export default function EditTask(props){
         taskId,
         taskTitle,
         taskDescription,
-        day,
         assignedTo,
         status,
         expectedTime,
@@ -35,19 +34,6 @@ export default function EditTask(props){
                 <br/>
                 <label>Description:
                     <input type='text' name='taskDescription'value={taskDescription} onChange={(e)=>props.handleEditTaskChange(e)}/> 
-                </label>
-                <br/>
-                <label>
-                    Day: 
-                    <select name='day' value={day} onChange={(e)=>props.handleEditTaskChange(e)}>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                    </select>                      
                 </label>
                 <br/>
                 <label>
